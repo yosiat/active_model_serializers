@@ -55,6 +55,16 @@ end
       end
       attr_reader :key_format
 
+      # Used to cache serializer name => serializer class
+      # when looked up by Serializer.get_serializer_for.
+      def serializers_cache
+        @serializers_cache ||= ThreadSafe::Cache.new
+      end
+
+      def build_cache_key(resource, options)
+        [resource, options].hash
+      end
+
       def serializer_for(resource, options = {})
         if resource.respond_to?(:serializer_class)
           resource.serializer_class
@@ -65,7 +75,11 @@ end
             ArraySerializer
           end
         else
-          _const_get build_serializer_class(resource, options)
+          cache_key = build_cache_key(resource, options)
+
+          serializers_cache.compute_if_absent(cache_key) do
+            _const_get build_serializer_class(resource, options) || DefaultSerializer
+          end
         end
       end
 

@@ -25,6 +25,9 @@ module Benchmark
         GC.enable
       end
 
+      # Clear serializers cache
+      ActiveModel::Serializer.serializers_cache.clear
+
       report = Benchmark.ips(time, warmup, true) do |x|
         x.report(label) { yield }
       end

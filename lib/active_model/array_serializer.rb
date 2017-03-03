@@ -25,6 +25,8 @@ module ActiveModel
       @context         = options[:context]
       @namespace       = options[:namespace]
       @key_format      = options[:key_format] || options[:each_serializer].try(:key_format)
+
+      @item_serializer_cache = Hash.new
     end
     attr_accessor :object, :scope, :root, :meta_key, :meta, :key_format, :context
 
@@ -35,7 +37,7 @@ module ActiveModel
     end
 
     def serializer_for(item)
-      serializer_class = @each_serializer || Serializer.serializer_for(item, namespace: @namespace) || DefaultSerializer
+      serializer_class = @each_serializer || serializer_class_for(item)
       serializer_class.new(item, scope: scope, key_format: key_format, context: @context, only: @only, except: @except, polymorphic: @polymorphic, namespace: @namespace)
     end
 
@@ -65,6 +67,17 @@ module ActiveModel
     end
 
     private
+
+    def serializer_class_for(item)
+      serializer_class = @item_serializer_cache[item.class.name]
+
+      unless serializer_class
+        serializer_class = Serializer.serializer_for(item, namespace: @namespace) || DefaultSerializer
+        @item_serializer_cache[item.class.name] = serializer_class
+      end
+
+      serializer_class
+    end
 
     def instrumentation_keys
       [:object, :scope, :root, :meta_key, :meta, :each_serializer, :resource_name, :key_format, :context]
