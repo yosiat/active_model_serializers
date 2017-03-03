@@ -34,6 +34,10 @@ end
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: (@windows_platforms + [:jruby])
 
+group :bench do
+  gem 'benchmark-ips', '>= 2.7.2'
+end
+
 group :test do
   gem 'activerecord'
   gem 'sqlite3',                          platform: (@windows_platforms + [:ruby])
