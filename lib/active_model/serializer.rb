@@ -290,7 +290,7 @@ end
       self.serialization_options = options
       return @wrap_in_array ? [] : nil if @object.nil?
       hash = attributes
-      hash.merge! associations(options)
+      hash.merge! associations(options) unless self.class._associations.empty?
       hash = convert_keys(hash) if key_format.present?
       hash = { :type => type_name(@object), type_name(@object) => hash } if @polymorphic
       @wrap_in_array ? [hash] : hash
