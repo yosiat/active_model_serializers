@@ -172,9 +172,12 @@ end
     end
 
     def attributes
-      filter(self.class._attributes.dup).each_with_object({}) do |name, hash|
+      hash = {}
+      filter(self.class._attributes.dup).each do |name|
         hash[name] = send(name)
       end
+
+      hash
     end
 
     def associations(options={})
