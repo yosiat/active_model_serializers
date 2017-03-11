@@ -42,8 +42,19 @@ module ActiveModel
     end
 
     def serializable_object(options={})
+      spec_class = @object.first.class
+      spec_serializer = serializer_for(@object.first)
       @object.map do |item|
-        serializer_for(item).serializable_object_with_notification(options)
+        serializer = spec_serializer
+
+        if item.is_a? spec_class
+          serializer.object = item
+        else
+          puts "Serializer for..."
+          serializer = serializer.for(item)
+        end
+
+        serializer.serializable_object_with_notification(options)
       end
     end
     alias_method :serializable_array, :serializable_object
