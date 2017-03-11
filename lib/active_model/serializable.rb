@@ -50,9 +50,10 @@ module ActiveModel
     end
 
     def instrument
-      ActiveSupport::Notifications.instrument(INSTRUMENTATION_KEY, { serializer: self.class.name }) do |_payload|
-        yield _payload if block_given?
-      end
+      yield if block_given?
+      #ActiveSupport::Notifications.instrument(INSTRUMENTATION_KEY, { serializer: self.class.name }) do |_payload|
+        #yield _payload if block_given?
+      #end
     end
 
     def instrumentation_keys
