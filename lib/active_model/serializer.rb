@@ -174,7 +174,7 @@ end
     def attributes
       hash = {}
       filter(self.class._attributes.dup).each do |name|
-        hash[name] = send(name)
+        hash[name.to_s.freeze] = send(name)
       end
 
       hash
